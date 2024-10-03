@@ -1,0 +1,7 @@
+* As with Si structures last week, create new structures with Germanium (Ge). [ ]
+* Experiment with lattices, size, shape, etc and its effect on energies. [ ]
+* Complete iGCSE Physics week/lessons 9 - 14. [ ]
+* Complete iGCSE Chemistry week/lessons 1 - 4. [ ]
+* Attempt to understand article for Journal Club. [x]
+* Complete presentation on article for Journal Club [ ]
+* Complete end of week (EOW) presentation. [ ]
