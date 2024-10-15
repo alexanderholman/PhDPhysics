@@ -3,6 +3,8 @@ from ase.io import read, write
 from ase.optimize import FIRE
 from ase.visualize import view
 from mace.calculators import mace_mp
+
+# Import the classes.
 from classes.POSCAR import POSCAR
 from classes.Species import Species
 from classes.IonPosition import IonPosition
@@ -11,6 +13,10 @@ from classes.Helper import Helper
 
 # Import the list of structures to process.
 from structures_list import *
+
+# add ordered list of species to basis, e.g. could be exclusively Si, or Ge, or mixture
+
+# lattice from basis
 
 # Process structures, generate files, and relax structures.
 for st in structures:
