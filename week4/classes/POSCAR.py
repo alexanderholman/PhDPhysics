@@ -34,7 +34,7 @@ class POSCAR:
             lattice: Lattice = Lattice(
                 a1=[5.43, 0.0, 0.0],
                 a2=[0.0, 5.43, 0.0],
-                a3=[0.0, 0.0, 5, 43]
+                a3=[0.0, 0.0, 5.43]
             ),
             selective_dynamics: bool = True,
             coordinate_mode: str = "Direct"
@@ -135,7 +135,7 @@ class POSCAR:
             for _ in range(weights[i]):
                 weighted_species.append(s)
 
-        self.comment += "_to_" + "_".join(species)
+        # self.comment += "_to_" + "_".join(species)
         for s in species:
             result_species.append(
                 Species(
@@ -191,7 +191,7 @@ class POSCAR:
         return self.atoms
 
 
-    def relax(self, write: bool = False) -> None:
+    def relax(self, write: bool = False, filename: str = None) -> None:
         # Set the periodic boundary conditions to True.
         self.atoms.set_pbc(True)
 
@@ -209,15 +209,19 @@ class POSCAR:
 
         if write:
             dirname = "./structures/" + Helper.slugify(self.comment) + "/"
-            filename = dirname + "relaxed.vasp"
+            if filename is None:
+                filename = "relaxed.vasp"
+            filename = dirname + filename
             # Write the relaxed structure to a VASP POSCAR file.
             self.atoms.write(filename, format='vasp', direct=True)
 
         self.atom_iterations.append(deepcopy(self.atoms))
 
-    def write_energy(self, filename: str) -> None:
+    def write_energy(self, filename: str = None) -> None:
         dirname = "./structures/" + Helper.slugify(self.comment) + "/"
-        filename = dirname + "energy.txt"
+        if filename is None:
+            filename = "energy.txt"
+        filename = dirname + filename
 
         # Write potential energy to file
         file = open(filename, "w")

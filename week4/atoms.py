@@ -1,22 +1,11 @@
-import os
-from ase.io import read, write
-from ase.optimize import FIRE
-from ase.visualize import view
-from mace.calculators import mace_mp
-
 # Import the classes.
 from classes.POSCAR import POSCAR
 from classes.Species import Species
 from classes.IonPosition import IonPosition
 from classes.Position import Position
-from classes.Helper import Helper
 
 # Import the list of structures to process.
 from structures_list import *
-
-# add ordered list of species to basis, e.g. could be exclusively Si, or Ge, or mixture
-
-# lattice from basis
 
 # Process structures, generate files, and relax structures.
 for st in structures:
@@ -57,20 +46,21 @@ for st in structures:
 
     # Expand the structure to a super-cell.
     poscar.expand_to_super_cell(
-        x = 2,
-        y = 2,
-        z = 2
+        x = 5,
+        y = 5,
+        z = 5
     )
 
     expanded_poscar_file = poscar.write("generated-expanded.vasp")
 
-    # Read the generated structure from a VASP POSCAR file.
     poscar.load_into_ace()
 
-    poscar.relax(True)
+    poscar.relax(write = True)
+
+    poscar.write_energy()
 
     #view all iterations of the structure
     for i, atoms in enumerate(poscar.atom_iterations):
         poscar.atoms = atoms
         poscar.view()
-        poscar.image(f"image-{i}.png")
+        poscar.image(f"image-iteration-{i}.png")
