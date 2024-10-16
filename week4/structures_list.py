@@ -20,7 +20,7 @@ from classes.Lattice import Lattice
 
 structures = [
     {
-        "comment": "diy-bulk-si", # not really diy
+        "comment": "bulk-si",
         "species": [
             {
                 "name": "Si",
@@ -37,6 +37,34 @@ structures = [
             }
         ]
     },
+    # {
+    #     "comment": "bulk-si_ge",
+    #     "lattice": Lattice(
+    #         a1=[5.65, 0.0, 0.0],
+    #         a2=[0.0, 5.65, 0.0],
+    #         a3=[0.0, 0.0, 5.65]
+    #     ),
+    #     "species": [
+    #         {
+    #             "name": "Si",
+    #             "positions": [
+    #                 [0.0, 0.0, 0.0],
+    #                 [0.5, 0.5, 0.0],
+    #                 [0.5, 0.0, 0.5],
+    #                 [0.0, 0.5, 0.5],
+    #             ]
+    #         },
+    #         {
+    #             "name": "Ge",
+    #             "positions": [
+    #                 [0.25, 0.25, 0.25],
+    #                 [0.75, 0.75, 0.25],
+    #                 [0.75, 0.25, 0.75],
+    #                 [0.25, 0.75, 0.75]
+    #             ]
+    #         }
+    #     ]
+    # },
     # # Structures from Materials Project
     # # source https://next-gen.materialsproject.org/materials?_limit=75&chemsys=Si
     # {

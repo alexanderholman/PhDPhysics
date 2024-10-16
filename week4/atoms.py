@@ -39,49 +39,38 @@ for st in structures:
     if "lattice" in st:
         poscar.lattice = st["lattice"]
 
-    # generate filenames
-    dirname = "./structures/" + Helper.slugify(st["comment"]) + "/"
-    generated_file = dirname + "generated.vasp"
-    relaxed_file = dirname + "relaxed.vasp"
-    image_file = dirname + "image.png"
-    energy_file = dirname + "potential_energy.txt"
-
-    # Create the directory if it does not exist.
-    os.makedirs(os.path.dirname(generated_file), exist_ok=True)
-
-    # Write the generated structure to a VASP POSCAR file.
-    file = open(generated_file, "w")
-    file.write(str(poscar))
-    file.close()
+    generated_poscar_file = poscar.write("generated.vasp")
     
     # Read the generated structure from a VASP POSCAR file.
-    atoms = read(generated_file)
+    poscar.load_into_ace()
 
-    # Set the periodic boundary conditions to True.
-    atoms.set_pbc(True)
+    # Randomise the species of the structure.
+    poscar.randomise_species(
+        species=["Si", "Ge"],
+        weights=[50, 50]
+    )
 
-    # Initialize the MACE machine learning potential.
-    macemp = mace_mp(model="large", dispersion=True, default_dtype="float64")
+    randomised_poscar_file = poscar.write("generated-random.vasp")
 
-    # Assign the MACE potential to the atoms object for subsequent calculations.
-    atoms.calc = macemp
+    # Read the generated structure from a VASP POSCAR file.
+    poscar.load_into_ace()
 
-    # Set up and run the optimization.
-    optimizer = FIRE(atoms)
+    # Expand the structure to a super-cell.
+    poscar.expand_to_super_cell(
+        x = 2,
+        y = 2,
+        z = 2
+    )
 
-    # Run the optimization until the maximum force on each atom is less than 0.005 eV/Å.
-    optimizer.run(fmax=0.005)
+    expanded_poscar_file = poscar.write("generated-expanded.vasp")
 
-    # Write the relaxed structure to a VASP POSCAR file.
-    atoms.write(relaxed_file, format='vasp', direct=True)
+    # Read the generated structure from a VASP POSCAR file.
+    poscar.load_into_ace()
 
-    # Write potential energy to file
-    file = open(energy_file, "w")
-    file.write("total: " + str(atoms.get_potential_energy()) + "\nper atom: " + str(atoms.get_potential_energy() / len(atoms)))
-    file.close()
+    poscar.relax(True)
 
-    # Write the image of the relaxed structure.
-    write(image_file, atoms, rotation="45x,45y,45z", scale=150)
-
-    # View the relaxed structure.
-    view(atoms)
+    #view all iterations of the structure
+    for i, atoms in enumerate(poscar.atom_iterations):
+        poscar.atoms = atoms
+        poscar.view()
+        poscar.image(f"image-{i}.png")
