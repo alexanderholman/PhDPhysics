@@ -12,7 +12,7 @@ st = {
     "lattice": Lattice(
         a1=[2.4559495449 , 0.0, 0.0],
         a2=[-1.2279240765, 2.1269439648, 0.0],
-        a3=[0.2, 0.0, 20.0]
+        a3=[0.0, 0.0, 10.0]
     ),
     "species": [
         {
@@ -26,7 +26,7 @@ st = {
 }
 
 # Process structures, generate files, and relax structures.
-comment = st["comment"] + "-10-10-2"
+comment = st["comment"] + "-3-3-1"
 
 poscar = POSCAR(
     comment=comment,
@@ -61,31 +61,31 @@ poscar.atoms = poscar.atom_iterations[0]
 
 # Expand the structure to a super-cell.
 poscar.expand_to_super_cell(
-    x=10,
-    y=10,
-    z=2
+    x=3,
+    y=3,
+    z=1
 )
 
 # Write the expanded structure to a VASP POSCAR file.
-poscar.write(f"expanded-10-10-2.vasp")
+poscar.write(f"expanded-3-3-1.vasp")
 
 # Read the generated structure from a VASP POSCAR file.
 poscar.load_into_ace()
 
 # Take snapshot of the structure, pre-relaxation.
-poscar.image(f"pre-relaxation-expanded-10-10-2.png")
+poscar.image(f"pre-relaxation-expanded-3-3-1.png")
 
 # Relax the structure.
 poscar.relax(
     write=True,
-    filename=f"relaxed-expanded-10-10-2.vasp"
+    filename=f"relaxed-expanded-3-3-1.vasp"
 )
 
 # Take snapshot of the structure, post-relaxation.
-poscar.image(f"post-relaxation-expanded-10-10-2.png")
+poscar.image(f"post-relaxation-expanded-3-3-1.png")
 
 # Write the energy of the relaxed structure.
-poscar.write_energy(filename=f"energy-expanded-10-10-2.txt")
+poscar.write_energy(filename=f"energy-expanded-3-3-1.txt")
 
 # view all iterations of the structure
 for i, atoms in enumerate(poscar.atom_iterations):
