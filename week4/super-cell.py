@@ -71,6 +71,7 @@ for st in structures:
     for n in range(1, N + 1):
         # Load original structure
         poscar.species = deepcopy(original_poscar.species)
+        poscar.lattice = deepcopy(original_poscar.lattice)
         poscar.atoms = poscar.atom_iterations[0]
 
         # Expand the structure to a super-cell.

@@ -56,6 +56,7 @@ poscar.load_into_ace()
 
 # Load original structure
 poscar.species = deepcopy(original_poscar.species)
+poscar.lattice = deepcopy(original_poscar.lattice)
 poscar.atoms = poscar.atom_iterations[0]
 
 # define number of times to expand the structure to a super-cell
