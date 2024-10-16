@@ -6,8 +6,6 @@ from mace.calculators import mace_mp
 from copy import deepcopy
 from random import randint
 
-from numpy.random import random
-
 from .Helper import Helper
 from .Lattice import Lattice
 from .Species import Species
