@@ -8,7 +8,7 @@ from classes.Position import Position
 from classes.Lattice import Lattice
 
 # Number of times to expand the structure to a super-cell.
-N = 3
+N = 5
 
 st = {
     "comment": "graphene",
