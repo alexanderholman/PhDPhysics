@@ -7,9 +7,6 @@ from classes.IonPosition import IonPosition
 from classes.Position import Position
 from classes.Lattice import Lattice
 
-# Number of times to expand the structure to a super-cell.
-N = 3
-
 st = {
     "comment": "graphene",
     "lattice": Lattice(
@@ -29,7 +26,7 @@ st = {
 }
 
 # Process structures, generate files, and relax structures.
-comment = st["comment"] # + f"-super-cell-{N}"
+comment = st["comment"] + "-simple"
 
 poscar = POSCAR(
     comment=comment,
@@ -57,39 +54,40 @@ poscar.write(f"generated.vasp")
 # Load randomised structure into ASE.
 poscar.load_into_ace()
 
-# Expand the structure to a super-cell N times
-for n in range(1, N + 1):
-    # Load original structure
-    poscar.species = deepcopy(original_poscar.species)
-    poscar.atoms = deepcopy(poscar.atom_iterations[0])
+# Load original structure
+poscar.species = deepcopy(original_poscar.species)
+poscar.atoms = poscar.atom_iterations[0]
 
-    # Expand the structure to a super-cell.
-    poscar.expand_to_super_cell(
-        x=n,
-        y=n,
-        z=n
-    )
+# define number of times to expand the structure to a super-cell
+n = 3
 
-    # Write the expanded structure to a VASP POSCAR file.
-    poscar.write(f"generated-expanded-{n}.vasp")
+# Expand the structure to a super-cell.
+poscar.expand_to_super_cell(
+    x=n,
+    y=n,
+    z=n
+)
 
-    # Read the generated structure from a VASP POSCAR file.
-    poscar.load_into_ace()
+# Write the expanded structure to a VASP POSCAR file.
+poscar.write(f"expanded-{n}.vasp")
 
-    # Take snapshot of the structure, pre-relaxation.
-    poscar.image(f"pre-relaxation-expanded-{n}.png")
+# Read the generated structure from a VASP POSCAR file.
+poscar.load_into_ace()
 
-    # Relax the structure.
-    poscar.relax(
-        write=True,
-        filename=f"relaxed-expanded-{n}.vasp"
-    )
+# Take snapshot of the structure, pre-relaxation.
+poscar.image(f"pre-relaxation-expanded-{n}.png")
 
-    # Take snapshot of the structure, post-relaxation.
-    poscar.image(f"post-relaxation-expanded-{n}.png")
+# Relax the structure.
+poscar.relax(
+    write=True,
+    filename=f"relaxed-expanded-{n}.vasp"
+)
 
-    # Write the energy of the relaxed structure.
-    poscar.write_energy(filename=f"energy-expanded-{n}.txt")
+# Take snapshot of the structure, post-relaxation.
+poscar.image(f"post-relaxation-expanded-{n}.png")
+
+# Write the energy of the relaxed structure.
+poscar.write_energy(filename=f"energy-expanded-{n}.txt")
 
 # view all iterations of the structure
 for i, atoms in enumerate(poscar.atom_iterations):

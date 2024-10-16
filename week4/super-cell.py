@@ -1,4 +1,6 @@
 # Import the classes.
+from copy import deepcopy
+
 from classes.POSCAR import POSCAR
 from classes.Species import Species
 from classes.IonPosition import IonPosition
@@ -8,7 +10,7 @@ from classes.Position import Position
 from structures_list import *
 
 # Number of times to expand the structure to a super-cell.
-N = 3
+N = 5
 
 randomise = [
     ["Si", 50],
@@ -60,12 +62,15 @@ for st in structures:
         # Write the randomised structure to a VASP POSCAR file.
         poscar.write(f"generated-random.vasp")
 
+    original_poscar = deepcopy(poscar)
+
     # Load randomised structure into ASE.
     poscar.load_into_ace()
 
     # Expand the structure to a super-cell N times
     for n in range(1, N + 1):
         # Load original structure
+        poscar.species = deepcopy(original_poscar.species)
         poscar.atoms = poscar.atom_iterations[0]
 
         # Expand the structure to a super-cell.
