@@ -20,7 +20,7 @@ N = 5
 
 # Process structures, generate files, and relax structures.
 for st in structures:
-    comment = st["comment"] + f"-split"
+    comment = st["comment"] + f"-randomise"
 
     if len(split):
         # split randomise into species and weights
@@ -62,13 +62,13 @@ for st in structures:
 
     if len(split):
         # Randomise the species of the structure.
-        poscar.split_species_x(
+        poscar.randomise_species(
             species=split_species,
             weights=split_weights
         )
 
         # Write the randomised structure to a VASP POSCAR file.
-        poscar.write(f"generated-expanded-{N}-split.vasp")
+        poscar.write(f"generated-expanded-{N}-randomise.vasp")
 
     original_poscar = deepcopy(poscar)
 
@@ -76,19 +76,19 @@ for st in structures:
     poscar.load_into_ace()
 
     # Take snapshot of the structure, pre-relaxation.
-    poscar.image(f"pre-relaxation-expanded-{N}-split.png")
+    poscar.image(f"pre-relaxation-expanded-{N}-randomise.png")
 
     # Relax the structure.
     poscar.relax(
         write=True,
-        filename=f"relaxed-expanded-{N}-split.vasp"
+        filename=f"relaxed-expanded-{N}-randomise.vasp"
     )
 
     # Take snapshot of the structure, post-relaxation.
-    poscar.image(f"post-relaxation-expanded-{N}-split.png")
+    poscar.image(f"post-relaxation-expanded-{N}-randomise.png")
 
     # Write the energy of the relaxed structure.
-    poscar.write_energy(filename=f"energy-expanded-{N}-split.txt")
+    poscar.write_energy(filename=f"energy-expanded-{N}-randomise.txt")
 
     # view all iterations of the structure
     for i, atoms in enumerate(poscar.atom_iterations):
