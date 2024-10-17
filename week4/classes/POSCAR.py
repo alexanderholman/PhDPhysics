@@ -153,6 +153,141 @@ class POSCAR:
                 )
         self.species = result_species
 
+    def split_species_x(self, species: list[str] = None, weights: list[int] = None) -> None:
+        result_species = []
+        # self.comment += "-split"
+        if species is None:
+            species = [s.name for s in self.species]
+        if weights is None:
+            weights = [1 for _ in species]
+        if len(weights) != len(species):
+            raise ValueError("The number of species and weights must be the same.")
+        species_distances = []
+        total_distance = sum(weights)
+        distance_travelled = 0
+        for i, s in enumerate(species):
+            travel_from = distance_travelled
+            travel_distance = weights[i]/total_distance
+            travel_to = travel_from + travel_distance
+            species_distances.append([travel_from, travel_to, s])
+            distance_travelled = travel_to
+
+        # self.comment += "_to_" + "_".join(species)
+        species_to_index = {}
+        for i, s in enumerate(species):
+            result_species.append(
+                Species(
+                    name=s,
+                    ion_positions=[]
+                )
+            )
+            species_to_index[s] = i
+        for s in self.species:
+            for i, ion in enumerate(s.ion_positions):
+                # assign new species. ion.x is passed the "relative weight" of the species
+                for j, distances in enumerate(species_distances):
+                    travel_from, travel_to, new_s = distances
+                    if travel_from <= ion.x.value < travel_to:
+                        result_species[species_to_index.get(new_s)].ion_positions.append(
+                            IonPosition(
+                                x=ion.x,
+                                y=ion.y,
+                                z=ion.z
+                            )
+                        )
+                        break
+        self.species = result_species
+
+    def split_species_y(self, species: list[str] = None, weights: list[int] = None) -> None:
+        result_species = []
+        # self.comment += "-split"
+        if species is None:
+            species = [s.name for s in self.species]
+        if weights is None:
+            weights = [1 for _ in species]
+        if len(weights) != len(species):
+            raise ValueError("The number of species and weights must be the same.")
+        species_distances = []
+        total_distance = sum(weights)
+        distance_travelled = 0
+        for i, s in enumerate(species):
+            travel_from = distance_travelled
+            travel_distance = weights[i]/total_distance
+            travel_to = travel_from + travel_distance
+            species_distances.append([travel_from, travel_to, s])
+            distance_travelled = travel_to
+
+        # self.comment += "_to_" + "_".join(species)
+        species_to_index = {}
+        for i, s in enumerate(species):
+            result_species.append(
+                Species(
+                    name=s,
+                    ion_positions=[]
+                )
+            )
+            species_to_index[s] = i
+        for s in self.species:
+            for i, ion in enumerate(s.ion_positions):
+                # assign new species. ion.y is passed the "relative weight" of the species
+                for j, distances in enumerate(species_distances):
+                    travel_from, travel_to, new_s = distances
+                    if travel_from <= ion.y.value < travel_to:
+                        result_species[species_to_index.get(new_s)].ion_positions.append(
+                            IonPosition(
+                                x=ion.x,
+                                y=ion.y,
+                                z=ion.z
+                            )
+                        )
+                        break
+        self.species = result_species
+
+    def split_species_z(self, species: list[str] = None, weights: list[int] = None) -> None:
+        result_species = []
+        # self.comment += "-split"
+        if species is None:
+            species = [s.name for s in self.species]
+        if weights is None:
+            weights = [1 for _ in species]
+        if len(weights) != len(species):
+            raise ValueError("The number of species and weights must be the same.")
+        species_distances = []
+        total_distance = sum(weights)
+        distance_travelled = 0
+        for i, s in enumerate(species):
+            travel_from = distance_travelled
+            travel_distance = weights[i]/total_distance
+            travel_to = travel_from + travel_distance
+            species_distances.append([travel_from, travel_to, s])
+            distance_travelled = travel_to
+
+        # self.comment += "_to_" + "_".join(species)
+        species_to_index = {}
+        for i, s in enumerate(species):
+            result_species.append(
+                Species(
+                    name=s,
+                    ion_positions=[]
+                )
+            )
+            species_to_index[s] = i
+        for s in self.species:
+            for i, ion in enumerate(s.ion_positions):
+                # assign new species. ion.z is passed the "relative weight" of the species
+                for j, distances in enumerate(species_distances):
+                    travel_from, travel_to, new_s = distances
+                    if travel_from <= ion.z.value < travel_to:
+                        result_species[species_to_index.get(new_s)].ion_positions.append(
+                            IonPosition(
+                                x=ion.x,
+                                y=ion.y,
+                                z=ion.z
+                            )
+                        )
+                        break
+        self.species = result_species
+
     def write(self, filename: str, dirname: str = None) -> str:
         if dirname is None:
             dirname = "./structures/" + Helper.slugify(self.comment) + "/"
@@ -187,7 +322,6 @@ class POSCAR:
             os.remove(self.written_to)
             self.written_to = None
         return self.atoms
-
 
     def relax(self, write: bool = False, filename: str = None) -> None:
         # Set the periodic boundary conditions to True.
