@@ -64,6 +64,7 @@ weights = [1, 1]
 
 # build comparisons
 comparisons = {
+    'si_only': [],
     'split_no_alloy': [],
     # 'split_with_alloy': [], # not yet implemented todo implement
     'random_pre_expansion': [],
@@ -84,9 +85,20 @@ while len(random_pre_expansion.species[0].ion_positions) != len(random_pre_expan
     )
 
 # for each size of expansion to a super-cell 1 -> n
-N = 1
+N = 5
 
 for n in range(1, N + 1):
+    # build si only
+    if "si_only" in comparisons:
+        si_only = deepcopy(mp_149_poscar)
+        si_only.expand_to_super_cell(
+            x=n,
+            y=n,
+            z=n,
+        )
+        comparisons['si_only'].append(si_only)
+
+
     # build split without alloy interface
     if "split_no_alloy" in comparisons:
         split_no_alloy = deepcopy(mp_149_poscar)
