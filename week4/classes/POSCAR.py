@@ -323,7 +323,7 @@ class POSCAR:
             self.written_to = None
         return self.atoms
 
-    def relax(self, write: bool = False, filename: str = None) -> None:
+    def relax(self, write: bool = False, filename: str = None, dirname: str = None) -> None:
         # Set the periodic boundary conditions to True.
         self.atoms.set_pbc(True)
 
@@ -340,7 +340,8 @@ class POSCAR:
         optimizer.run(fmax=0.005)
 
         if write:
-            dirname = "./structures/" + Helper.slugify(self.comment) + "/"
+            if dirname is None:
+                dirname = "./structures/" + Helper.slugify(self.comment) + "/"
             if filename is None:
                 filename = "relaxed.vasp"
             filename = dirname + filename
@@ -349,8 +350,9 @@ class POSCAR:
 
         self.atom_iterations.append(deepcopy(self.atoms))
 
-    def write_energy(self, filename: str = None) -> None:
-        dirname = "./structures/" + Helper.slugify(self.comment) + "/"
+    def write_energy(self, filename: str = None, dirname: str = None) -> None:
+        if dirname is None:
+            dirname = "./structures/" + Helper.slugify(self.comment) + "/"
         if filename is None:
             filename = "energy.txt"
         filename = dirname + filename
@@ -360,8 +362,9 @@ class POSCAR:
         file.write("total: " + str(self.atoms.get_potential_energy()) + "\nper atom: " + str(self.atoms.get_potential_energy() / len(self.atoms)))
         file.close()
 
-    def image(self, filename: str = None) -> None:
-        dirname = "./structures/" + Helper.slugify(self.comment) + "/"
+    def image(self, filename: str = None, dirname: str = None) -> None:
+        if dirname is None:
+            dirname = "./structures/" + Helper.slugify(self.comment) + "/"
         if filename is None:
             filename = "image.png"
         filename = dirname + filename
