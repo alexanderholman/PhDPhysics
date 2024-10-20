@@ -64,10 +64,10 @@ weights = [1, 1]
 
 # build comparisons
 comparisons = {
-    # 'split_no_alloy': [],
+    'split_no_alloy': [],
     # 'split_with_alloy': [], # not yet implemented todo implement
-    # 'random_pre_expansion': [],
-    'random_per_expansion': [], # not needed perhaps, energies will be random
+    'random_pre_expansion': [],
+    'random_post_expansion': [], # not needed perhaps, energies will be random
 }
 
 # randomise before expansion
@@ -116,23 +116,23 @@ for n in range(1, N + 1):
         comparisons['random_pre_expansion'].append(random_pre_expansion_copy)
 
     # build randomised at each expansion, force perfect radio
-    if "random_per_expansion" in comparisons:
-        random_per_expansion_copy = deepcopy(mp_149_poscar)
-        random_per_expansion_copy.expand_to_super_cell(
+    if "random_post_expansion" in comparisons:
+        random_post_expansion_copy = deepcopy(mp_149_poscar)
+        random_post_expansion_copy.expand_to_super_cell(
             x=n,
             y=n,
             z=n,
         )
-        random_per_expansion_copy.randomise_species(
+        random_post_expansion_copy.randomise_species(
             species=species,
             weights=weights,
         )
-        while len(random_per_expansion_copy.species[0].ion_positions) != len(random_per_expansion_copy.species[1].ion_positions):
-            random_per_expansion_copy.randomise_species(
+        while len(random_post_expansion_copy.species[0].ion_positions) != len(random_post_expansion_copy.species[1].ion_positions):
+            random_post_expansion_copy.randomise_species(
                 species=species,
                 weights=weights,
             )
-        comparisons['random_per_expansion'].append(random_per_expansion_copy)
+        comparisons['random_post_expansion'].append(random_post_expansion_copy)
 
 # ==================== build end ====================
 
