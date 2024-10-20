@@ -77,14 +77,14 @@ random_pre_expansion.randomise_species(
     weights=weights,
 )
 
-while len(random_pre_expansion.species[0].ion_positions) is not len(random_pre_expansion.species[1].ion_positions):
+while len(random_pre_expansion.species[0].ion_positions) != len(random_pre_expansion.species[1].ion_positions):
     random_pre_expansion.randomise_species(
         species=species,
         weights=weights,
     )
 
 # for each size of expansion to a super-cell 1 -> n
-N = 5
+N = 1
 
 for n in range(1, N + 1):
     # build split without alloy interface
@@ -127,11 +127,12 @@ for n in range(1, N + 1):
             species=species,
             weights=weights,
         )
-        while len(random_per_expansion_copy.species[0].ion_positions) is not len(random_per_expansion_copy.species[1].ion_positions):
+        while len(random_per_expansion_copy.species[0].ion_positions) != len(random_per_expansion_copy.species[1].ion_positions):
             random_per_expansion_copy.randomise_species(
                 species=species,
                 weights=weights,
             )
+        comparisons['random_per_expansion'].append(random_per_expansion_copy)
 
 # ==================== build end ====================
 
