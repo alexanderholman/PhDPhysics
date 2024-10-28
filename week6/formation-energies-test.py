@@ -20,6 +20,7 @@ from classes.Lattice import Lattice
 # load random_post_expansion
 structures_list = []
 bulk_structures: dict[str, POSCAR] = {
+    "B": POSCAR.from_file(filename="mp-160.poscar", dirname=f"./structures/"),
     "Si": POSCAR.from_file(filename="mp-149.poscar", dirname=f"./structures/"),
     "Ge": POSCAR.from_file(filename="mp-32.poscar", dirname=f"./structures/"),
     "Ga": POSCAR.from_file(filename="mp-142.poscar", dirname=f"./structures/"),
@@ -29,6 +30,8 @@ bulk_structures: dict[str, POSCAR] = {
 #     "SiGe": 0.053, # calculated -0.0026943691455496577
 #     "Ga3Si": 0.210, # calculated 0.18105908160402961
 #     "mp-1095269": 0.111, #calculated 0.11059346380659463
+#     "mp-569128": -0.044, #calculated -0.1742738611235124
+#     "mp-7700": 0.454, #calculated 0.38623465313062055
 # }
 
 # ==================== setup end ====================
