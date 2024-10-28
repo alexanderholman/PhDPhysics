@@ -21,7 +21,7 @@ from classes.Lattice import Lattice
 
 stretch = [1.05, 1, 1]
 compress = [0.95, 1, 1]
-increments = [0.01, 0.01, 0.01]
+increments = [0.001, 0.01, 0.01]
 structures_list = []
 hull_energies = {}
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -52,8 +52,11 @@ class StretchedStructure:
 # =================== build start ===================
 
 # for each split_no_alloy, random_post_expansion
-for comparison in ['split_no_alloy', 'random_post_expansion']:
-    for n in range(1, 2):
+for comparison in [
+    'split_no_alloy',
+    # 'random_post_expansion',
+]:
+    for n in range(3, 4):
         # load structure
         poscar = POSCAR.from_file(filename=f"generated-{n}.vasp", dirname=f"./structures/comparison/{comparison}/")
 
@@ -91,18 +94,15 @@ for comparison in ['split_no_alloy', 'random_post_expansion']:
 # ==================== build end ====================
 
 # open new csv file
-csv_filename = f"./structures/lattice-stretch-compress/{timestamp}/energies.csv"
+csv_filename = f"./structures/lattice-stretch-compress/energies.csv"
 os.makedirs(os.path.dirname(csv_filename), exist_ok=True)
 csv = open(csv_filename, "w")
 csv.write("group,multiplier_x,multiplier_y,multiplier_z,a1,a2,a3,energy_above_hull\n")
 
-print(f"relaxing stretched structures: {len(structures_list)}")
-
 # for each stretched_structure
 for i, stretched_structure in enumerate(structures_list):
     n = i + 1
-    print(f"relaxing structure {n}/{len(structures_list)}")
-    dirname = f"./structures/lattice-stretch-compress/{timestamp}/{stretched_structure.group}/"
+    dirname = f"./structures/lattice-stretch-compress/{stretched_structure.group}/"
     filename_postfix = f"{stretched_structure.multipliers[0]}-{stretched_structure.multipliers[1]}-{stretched_structure.multipliers[2]}"
     poscar = stretched_structure.structure
     os.makedirs(os.path.dirname(dirname+"loaded/vasp/"), exist_ok=True)

@@ -44,6 +44,29 @@ class POSCAR:
         self.selective_dynamics = selective_dynamics
         self.coordinate_mode = coordinate_mode
 
+    def calculate_formation_energies(self, bulk_structures: dict[str, "POSCAR"], relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None, image: bool = False, image_filename: str = None, image_dirname: str = None) -> float:
+        self.relax(
+            write=relax_write,
+            filename=relax_filename,
+            dirname=relax_dirname
+        )
+        if image:
+            self.image(
+                filename=image_filename,
+                dirname=image_dirname
+            )
+        Esuper = self.atoms.get_potential_energy()
+        Especies = 0
+        Nspecies = 0
+        for species in self.species:
+            if species.name not in bulk_structures:
+                raise ValueError(f"Missing bulk structure for species {species.name}")
+            bulk_structure = bulk_structures[species.name]
+            Especies += len(species.ion_positions) * (bulk_structure.atoms.get_potential_energy() / len(bulk_structure.atoms))
+            Nspecies += len(species.ion_positions)
+        Ef = (Esuper - Especies) / Nspecies
+        return Ef
+
     def append_to_x(self, poscar: "POSCAR") -> None:
         pass
 
