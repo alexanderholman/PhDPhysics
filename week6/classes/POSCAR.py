@@ -62,6 +62,8 @@ class POSCAR:
             if species.name not in bulk_structures:
                 raise ValueError(f"Missing bulk structure for species {species.name}")
             bulk_structure = bulk_structures[species.name]
+            bulk_structure.load_into_ace()
+            bulk_structure.relax()
             Especies += len(species.ion_positions) * (bulk_structure.atoms.get_potential_energy() / len(bulk_structure.atoms))
             Nspecies += len(species.ion_positions)
         Ef = (Esuper - Especies) / Nspecies
