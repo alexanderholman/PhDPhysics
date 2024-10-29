@@ -139,7 +139,7 @@ class POSCAR:
         "No": None,
         "Lr": None,
     }
-
+    RELAXED_BULK_STRUCTURES: dict[str, "POSCAR"] = {}
     comment: str = ""
     scaling_factor: float = 1.0
     lattice: Lattice
@@ -171,7 +171,26 @@ class POSCAR:
         self.selective_dynamics = selective_dynamics
         self.coordinate_mode = coordinate_mode
 
-    def energy_above_hull(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
+    @staticmethod
+    def get_bulk_structure(species: str) -> "POSCAR":
+        if species not in POSCAR.BULKS:
+            raise ValueError(f"Unknown species {species}")
+        if POSCAR.BULKS[species] is None:
+            raise ValueError(f"Missing bulk structure for species {species}")
+        return POSCAR.from_file(filename=POSCAR.BULKS[species], dirname=f"./structures/bulk/", load_into_ace=True)
+
+    @staticmethod
+    def get_relaxed_bulk_structure(species: str) -> "POSCAR":
+        if species not in POSCAR.RELAXED_BULK_STRUCTURES:
+            POSCAR.RELAXED_BULK_STRUCTURES[species] = POSCAR.get_bulk_structure(species)
+            POSCAR.RELAXED_BULK_STRUCTURES[species].relax()
+        return POSCAR.RELAXED_BULK_STRUCTURES[species]
+
+    @staticmethod
+    def get_hull_energy(species: str):
+        return POSCAR.get_relaxed_bulk_structure(species).energy_per_atom()
+
+    def energy_per_atom(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
         if relax or self.is_relaxed is False:
             self.relax(
                 write=relax_write,
@@ -180,6 +199,39 @@ class POSCAR:
             )
         return self.atoms.get_potential_energy() / len(self.atoms)
 
+    def energies_above_hull(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
+        if relax or self.is_relaxed is False:
+            self.relax(
+                write=relax_write,
+                filename=relax_filename,
+                dirname=relax_dirname
+            )
+        if len(self.species) > 1:
+            raise ValueError("The structure must contain only one species to calculate the energy above hull")
+        species = self.species[0]
+        if species.name not in self.BULKS:
+            raise ValueError(f"Unknown species {species.name}")
+        if self.BULKS[species.name] is None:
+            raise ValueError(f"Missing bulk structure for species {species.name}")
+        return self.atoms.get_potential_energy() / len(self.atoms) - POSCAR.get_hull_energy(species.name)
+
+    def energies_above_hull_multi_species(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> list[float]:
+        if relax or self.is_relaxed is False:
+            self.relax(
+                write=relax_write,
+                filename=relax_filename,
+                dirname=relax_dirname
+            )
+        energies = []
+        for species in self.species:
+            if species.name not in self.BULKS:
+                raise ValueError(f"Unknown species {species.name}")
+            if self.BULKS[species.name] is None:
+                raise ValueError(f"Missing bulk structure for species {species.name}")
+            species_energies = [map(lambda atom: atom.get_potential_energy(), filter(lambda atom: atom.symbol is species.name, self.atoms))]
+            energies.append(sum(species_energies) / len(species_energies) - POSCAR.get_hull_energy(species.name))
+        return energies
+
     def formation_energies(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
         if relax or self.is_relaxed is False:
             self.relax(
@@ -187,7 +239,6 @@ class POSCAR:
                 filename=relax_filename,
                 dirname=relax_dirname
             )
-
         Esuper = self.atoms.get_potential_energy()
         Especies = 0
         Nspecies = 0
@@ -196,9 +247,7 @@ class POSCAR:
                 raise ValueError(f"Unknown species {species.name}")
             if self.BULKS[species.name] is None:
                 raise ValueError(f"Missing bulk structure for species {species.name}")
-            bulk_structure = POSCAR.from_file(filename=f"{self.BULKS[species.name]}", dirname=f"./structures/bulk/")
-            bulk_structure.load_into_ace()
-            bulk_structure.relax()
+            bulk_structure = POSCAR.get_relaxed_bulk_structure(species.name)
             Especies += len(species.ion_positions) * (bulk_structure.atoms.get_potential_energy() / len(bulk_structure.atoms))
             Nspecies += len(species.ion_positions)
         Ef = (Esuper - Especies) / Nspecies
@@ -537,7 +586,7 @@ class POSCAR:
         view(self.atoms)
 
     @staticmethod
-    def from_file(filename: str, dirname: str = None) -> "POSCAR":
+    def from_file(filename: str, dirname: str = None, load_into_ace: bool = False) -> "POSCAR":
         filename = dirname + filename
         ase_atoms = read(filename)
         return_poscar = POSCAR(
@@ -571,6 +620,8 @@ class POSCAR:
                     )
                 )
             )
+        if (load_into_ace):
+            return_poscar.load_into_ace()
         return return_poscar
 
     def __str__(self) -> str:

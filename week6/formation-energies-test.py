@@ -1,24 +1,6 @@
-# ==================== setup start ===================
-# ===================== setup end ====================
-
-# imports
-from copy import deepcopy
-from datetime import datetime, date
-
-from numpy import arange
 import os
-
-#import classes
 from classes.POSCAR import POSCAR
-from classes.Species import Species
-from classes.IonPosition import IonPosition
-from classes.Position import Position
-from classes.Lattice import Lattice
 
-# load initial structure
-# load split_no_alloy
-# load random_post_expansion
-structures_list = []
 expected = {
     "mp-1094056": {
         "energies": {
@@ -64,16 +46,19 @@ expected = {
     },
 }
 
-# ==================== setup end ====================
-# ---------------------------------------------------
-# =================== build start ===================
-# ==================== build end ====================
+dirname = "./structures/formation-energy-known/"
+
+csv_filename = f"{dirname}energies.csv"
+os.makedirs(os.path.dirname(csv_filename), exist_ok=True)
+csv = open(csv_filename, "w")
+csv.write("mp-id,species,energies_per_atom,energies_above_hull_expected,energies_above_hull_calculated,formation_energies_expected,formation_energies_calculated\n")
 
 for filename in expected.keys():
-    # load structure
-    poscar = POSCAR.from_file(filename=f"{expected[filename]}.poscar", dirname=f"./structures/formation-energy-known/")
-    poscar.load_into_ace()
-    energy_above_hull = poscar.energy_above_hull()
-    formation_energy_per_atom = poscar.formation_energies()
-    print(f"energy above hull per atom: {formation_energy_per_atom}, expected: {expected[filename]['energies']['above_hull']}")
-    print(f"formation energies per atom: {formation_energy_per_atom}, expected: {expected[filename]['energies']['predicted_formation']}")
+    poscar = POSCAR.from_file(filename=f"{filename}.poscar", dirname=dirname, load_into_ace=True)
+    species = ",".join([f"{s.name}({len(s.ion_positions)})" for s in poscar.species])
+    per_species_energy_above_hull = ",".join([str(e) for e in poscar.energies_above_hull_multi_species()])
+    csv_line = f"{filename},'{species}',{poscar.energy_per_atom()},{expected[filename]['energies']['above_hull']},'{per_species_energy_above_hull}',{expected[filename]['energies']['predicted_formation']},{poscar.formation_energies()}\n"
+    csv.write(csv_line)
+    del poscar
+
+csv.close()
