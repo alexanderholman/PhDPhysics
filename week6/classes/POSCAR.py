@@ -228,7 +228,7 @@ class POSCAR:
                 raise ValueError(f"Unknown species {species.name}")
             if self.BULKS[species.name] is None:
                 raise ValueError(f"Missing bulk structure for species {species.name}")
-            species_energies = [map(lambda atom: atom.get_potential_energy(), filter(lambda atom: atom.symbol is species.name, self.atoms))]
+            species_energies = list(map(lambda atom: atom.charge, filter(lambda atom: atom.symbol is species.name, self.atoms)))
             energies.append(sum(species_energies) / len(species_energies) - POSCAR.get_hull_energy(species.name))
         return energies
 
