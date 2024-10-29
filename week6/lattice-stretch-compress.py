@@ -19,8 +19,8 @@ from classes.Lattice import Lattice
 # load split_no_alloy
 # load random_post_expansion
 
-stretch = [1.05, 1, 1]
-compress = [0.95, 1, 1]
+stretch = [1.02, 1, 1]
+compress = [0.98, 1, 1]
 increments = [0.001, 0.01, 0.01]
 structures_list = []
 hull_energies = {}

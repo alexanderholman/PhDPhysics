@@ -30,7 +30,7 @@ bulk_structures: dict[str, POSCAR] = {
 
 
 # load structure
-poscar = POSCAR.from_file(filename=f"generated-3.vasp", dirname=f"./structures/comparison/split_no_alloy/")
+poscar = POSCAR.from_file(filename=f"generated-5.vasp", dirname=f"./structures/comparison/split_no_alloy/")
 for i in range(1, 4):
     new_poscar = deepcopy(poscar)
     new_poscar.expand_to_super_cell(x=i)
