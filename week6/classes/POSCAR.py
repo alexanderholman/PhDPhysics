@@ -13,7 +13,133 @@ from .IonPosition import IonPosition
 from .Position import Position
 
 class POSCAR:
-    COORDINATES = ["Direct", "Cartesian"]
+    COORDINATES: list[str] = [
+        "Direct",
+        "Cartesian"
+    ]
+    BULKS: dict[str, str] = {
+        "H":  "mp-730101.poscar",
+        "He": "mp-23158.poscar",
+        "Li": "mp-1018134.poscar",
+        "Be": "mp-87.poscar",
+        "B":  "mp-160.poscar",
+        "C":  "mp-2516584.poscar",
+        "N":  "mp-154.poscar",
+        "O":  "mp-12957.poscar",
+        "F":  "mp-561203.poscar",
+        "Ne": "mp-111.poscar",
+        "Na": "mp-10172.poscar",
+        "Mg": "mp-153.poscar",
+        "Al": "mp-134.poscar",
+        "Si": "mp-149.poscar",
+        "P":  "mp-568348.poscar",
+        "S":  "mp-77.poscar",
+        "Cl": "mp-22848.poscar",
+        "Ar": "mp-23155.poscar",
+        "K":  "mp-1184804.poscar",
+        "Ca": "mp-45.poscar",
+        "Sc": "mp-67.poscar",
+        "Ti": "mp-72.poscar",
+        "V":  "mp-146.poscar",
+        "Cr": "mp-90.poscar",
+        "Mn": "mp-35.poscar",
+        "Fe": "mp-13.poscar",
+        "Co": "mp-102.poscar",
+        "Ni": "mp-23.poscar",
+        "Cu": "mp-30.poscar",
+        "Zn": "mp-79.poscar",
+        "Ga": "mp-142.poscar",
+        "Ge": "mp-32.poscar",
+        "As": "mp-158.poscar",
+        "Se": "mp-570481.poscar",
+        "Br": "mp-998864.poscar",
+        "Kr": "mp-975590.poscar",
+        "Rb": "mp-1179656.poscar",
+        "Sr": "mp-139.poscar",
+        "Y":  "mp-112.poscar",
+        "Zr": "mp-131.poscar",
+        "Nb": "mp-75.poscar",
+        "Mo": "mp-129.poscar",
+        "Tc": "mp-113.poscar",
+        "Ru": "mp-33.poscar",
+        "Rh": "mp-74.poscar",
+        "Pd": "mp-2.poscar",
+        "Ag": "mp-8566.poscar",
+        "Cd": "mp-94.poscar",
+        "In": "mp-85.poscar",
+        "Sn": "mp-117.poscar",
+        "Sb": "mp-104.poscar",
+        "Te": "mp-19.poscar",
+        "I":  "mp-639751.poscar",
+        "Xe": "mp-972256.poscar",
+        "Cs": "mp-1055940.poscar",
+        "Ba": "mp-122.poscar",
+        "La-Lu": None,
+        "Hf": "mp-103.poscar",
+        "Ta": "mp-569794.poscar",
+        "W":  "mp-91.poscar",
+        "Re": "mp-1186901.poscar",
+        "Os": "mp-49.poscar",
+        "Ir": "mp-101.poscar",
+        "Pt": "mp-126.poscar",
+        "Au": "mp-81.poscar",
+        "Hg": "mp-1017981.poscar",
+        "Tl": "mp-82.poscar",
+        "Pb": "mp-20483.poscar",
+        "Bi": "mp-567597.poscar",
+        "Po": None,
+        "At": None,
+        "Rn": None,
+        "Fr": None,
+        "Ra": None,
+        "Ac-Lr": None,
+        "Rf": None,
+        "Db": None,
+        "Sg": None,
+        "Bh": None,
+        "Hs": None,
+        "Mt": None,
+        "Ds": None,
+        "Rg": None,
+        "Cn": None,
+        "Nh": None,
+        "Fl": None,
+        "Mc": None,
+        "Lv": None,
+        "Ts": None,
+        "Og": None,
+        "La": "mp-26.poscar",
+        "Ce": "mp-28.poscar",
+        "Pr": "mp-97.poscar",
+        "Nd": "mp-123.poscar",
+        "Pm": "mp-867200.poscar",
+        "Sm": "mp-69.poscar",
+        "Eu": "mp-21462.poscar",
+        "Gd": "mp-155.poscar",
+        "Tb": "mp-18.poscar",
+        "Dy": "mp-88.poscar",
+        "Ho": "mp-144.poscar",
+        "Er": "mp-1184115.poscar",
+        "Tm": "mp-143.poscar",
+        "Yb": None,
+        "Lu": "mp-973571.poscar",
+        "Ac": "mp-862690.poscar",
+        "Th": "mp-37.poscar",
+        "Pa": "mp-62.poscar",
+        "U":  "mp-44.poscar",
+        "Np": "mp-11534.poscar",
+        "Pu": "mp-582819.poscar",
+        "Am": None,
+        "Cm": None,
+        "Bk": None,
+        "Cf": None,
+        "Es": None,
+        "Fm": None,
+        "Md": None,
+        "No": None,
+        "Lr": None,
+    }
+
     comment: str = ""
     scaling_factor: float = 1.0
     lattice: Lattice
@@ -23,6 +149,7 @@ class POSCAR:
     atoms: None
     atom_iterations = []
     written_to: str = None
+    is_relaxed: bool = False
 
     def __init__(
             self,
@@ -44,24 +171,32 @@ class POSCAR:
         self.selective_dynamics = selective_dynamics
         self.coordinate_mode = coordinate_mode
 
-    def calculate_formation_energies(self, bulk_structures: dict[str, "POSCAR"], relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None, image: bool = False, image_filename: str = None, image_dirname: str = None) -> float:
-        self.relax(
-            write=relax_write,
-            filename=relax_filename,
-            dirname=relax_dirname
-        )
-        if image:
-            self.image(
-                filename=image_filename,
-                dirname=image_dirname
+    def energy_above_hull(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
+        if relax or self.is_relaxed is False:
+            self.relax(
+                write=relax_write,
+                filename=relax_filename,
+                dirname=relax_dirname
             )
+        return self.atoms.get_potential_energy() / len(self.atoms)
+
+    def formation_energies(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
+        if relax or self.is_relaxed is False:
+            self.relax(
+                write=relax_write,
+                filename=relax_filename,
+                dirname=relax_dirname
+            )
+
         Esuper = self.atoms.get_potential_energy()
         Especies = 0
         Nspecies = 0
         for species in self.species:
-            if species.name not in bulk_structures:
+            if species.name not in self.BULKS:
+                raise ValueError(f"Unknown species {species.name}")
+            if self.BULKS[species.name] is None:
                 raise ValueError(f"Missing bulk structure for species {species.name}")
-            bulk_structure = bulk_structures[species.name]
+            bulk_structure = POSCAR.from_file(filename=f"{self.BULKS[species.name]}", dirname=f"./structures/bulk/")
             bulk_structure.load_into_ace()
             bulk_structure.relax()
             Especies += len(species.ion_positions) * (bulk_structure.atoms.get_potential_energy() / len(bulk_structure.atoms))
@@ -348,7 +483,7 @@ class POSCAR:
             self.written_to = None
         return self.atoms
 
-    def relax(self, write: bool = False, filename: str = None, dirname: str = None) -> None:
+    def relax(self, fmax: float = 0.005, write: bool = False, filename: str = None, dirname: str = None) -> None:
         # Set the periodic boundary conditions to True.
         self.atoms.set_pbc(True)
 
@@ -362,7 +497,10 @@ class POSCAR:
         optimizer = FIRE(self.atoms)
 
         # Run the optimization until the maximum force on each atom is less than 0.005 eV/Å.
-        optimizer.run(fmax=0.005)
+        optimizer.run(fmax=fmax)
+
+        # Set the relaxed flag to True.
+        self.is_relaxed = True
 
         if write:
             if dirname is None:
