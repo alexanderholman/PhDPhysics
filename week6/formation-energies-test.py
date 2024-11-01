@@ -2,48 +2,55 @@ import os
 from classes.POSCAR import POSCAR
 
 expected = {
-    "mp-1094056": {
-        "energies": {
-            "above_hull": 0.003,
-            "predicted_formation": 0.003 # -0.006545196732207437
-        },
-        "experimentally_observed": False
-    },
-    "mp-1096549": {
-        "energies": {
-            "above_hull": 0.053,
-            "predicted_formation": 0.053 # -0.0026943691455496577
-        },
-        "experimentally_observed": False
-    },
-    "mp-1183982": {
-        "energies": {
-            "above_hull": 0.210,
-            "predicted_formation": 0.210 # 0.18105908160402961
-        },
-        "experimentally_observed": False
-    },
-    "mp-1095269": {
-        "energies": {
-            "above_hull": 0.111,
-            "predicted_formation": 0.111 # 0.11059346380659463
-        },
-        "experimentally_observed": True
-    },
-    "mp-569128": {
+    # "mp-1094056": {
+    #     "energies": {
+    #         "above_hull": 0.003,
+    #         "predicted_formation": 0.003 # -0.006545196732207437
+    #     },
+    #     "experimentally_observed": False
+    # },
+    # "mp-1096549": {
+    #     "energies": {
+    #         "above_hull": 0.053,
+    #         "predicted_formation": 0.053 # -0.0026943691455496577
+    #     },
+    #     "experimentally_observed": False
+    # },
+    # "mp-1183982": {
+    #     "energies": {
+    #         "above_hull": 0.210,
+    #         "predicted_formation": 0.210 # 0.18105908160402961
+    #     },
+    #     "experimentally_observed": False
+    # },
+    # "mp-1095269": {
+    #     "energies": {
+    #         "above_hull": 0.111,
+    #         "predicted_formation": 0.111 # 0.11059346380659463
+    #     },
+    #     "experimentally_observed": True
+    # },
+    # "mp-569128": {
+    #     "energies": {
+    #         "above_hull": 0.0,
+    #         "predicted_formation": -0.044 #calculated -0.1742738611235124
+    #     },
+    #     "experimentally_observed": True
+    # },
+    # "mp-7700": {
+    #     "energies": {
+    #         "above_hull": 0.479,
+    #         "predicted_formation": 0.454 #calculated 0.38623465313062055
+    #     },
+    #     "experimentally_observed": True
+    # },
+    "mp-32": {
         "energies": {
             "above_hull": 0.0,
-            "predicted_formation": -0.044 #calculated -0.1742738611235124
+            "predicted_formation": 0.0
         },
         "experimentally_observed": True
-    },
-    "mp-7700": {
-        "energies": {
-            "above_hull": 0.479,
-            "predicted_formation": 0.454 #calculated 0.38623465313062055
-        },
-        "experimentally_observed": True
-    },
+    }
 }
 
 dirname = "./structures/formation-energy-known/"

@@ -74,7 +74,7 @@ class POSCAR:
         "Xe": "mp-972256.poscar",
         "Cs": "mp-1055940.poscar",
         "Ba": "mp-122.poscar",
-        "La-Lu": None,
+        # "La-Lu": None,
         "Hf": "mp-103.poscar",
         "Ta": "mp-569794.poscar",
         "W":  "mp-91.poscar",
@@ -92,7 +92,7 @@ class POSCAR:
         "Rn": None,
         "Fr": None,
         "Ra": None,
-        "Ac-Lr": None,
+        # "Ac-Lr": None,
         "Rf": None,
         "Db": None,
         "Sg": None,
@@ -190,18 +190,20 @@ class POSCAR:
     def get_hull_energy(species: str):
         return POSCAR.get_relaxed_bulk_structure(species).energy_per_atom()
 
-    def energy_per_atom(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
+    def energy_per_atom(self, relax: bool = False, fmax: float = 0.005, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
         if relax or self.is_relaxed is False:
             self.relax(
+                fmax=fmax,
                 write=relax_write,
                 filename=relax_filename,
                 dirname=relax_dirname
             )
         return self.atoms.get_potential_energy() / len(self.atoms)
 
-    def energies_above_hull(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
+    def energies_above_hull(self, relax: bool = False, fmax: float = 0.005, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
         if relax or self.is_relaxed is False:
             self.relax(
+                fmax=fmax,
                 write=relax_write,
                 filename=relax_filename,
                 dirname=relax_dirname
@@ -215,9 +217,10 @@ class POSCAR:
             raise ValueError(f"Missing bulk structure for species {species.name}")
         return self.atoms.get_potential_energy() / len(self.atoms) - POSCAR.get_hull_energy(species.name)
 
-    def energies_above_hull_multi_species(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> list[float]:
+    def energies_above_hull_multi_species(self, relax: bool = False, fmax: float = 0.005, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> list[float]:
         if relax or self.is_relaxed is False:
             self.relax(
+                fmax=fmax,
                 write=relax_write,
                 filename=relax_filename,
                 dirname=relax_dirname
@@ -232,9 +235,10 @@ class POSCAR:
             energies.append(sum(species_energies) / len(species_energies) - POSCAR.get_hull_energy(species.name))
         return energies
 
-    def formation_energies(self, relax: bool = False, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
+    def formation_energies(self, relax: bool = False, fmax: float = 0.005, relax_write: bool = False, relax_filename: str = None, relax_dirname: str = None) -> float:
         if relax or self.is_relaxed is False:
             self.relax(
+                fmax=fmax,
                 write=relax_write,
                 filename=relax_filename,
                 dirname=relax_dirname
