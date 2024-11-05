@@ -61,7 +61,6 @@ for i, stretched_structure in enumerate(structures_list):
         dirname=dirname+"loaded/png/"
     )
     formation_energy_per_atom = poscar.formation_energies(
-        fmax=0.1,
         relax_write=True,
         relax_filename=f"{filename_postfix}.vasp",
         relax_dirname=dirname+"relaxed/vasp/"
